@@ -1,16 +1,16 @@
 variable "acr_name" {
     type = string
-    description = "(optional) describe your variable"
+    description = "Name of the Container Registry"
 }
 
 variable "acr_rg_name" {
     type = string
-    description = "(optional) describe your variable"
+    description = "Resource group name for the Container Registry"
 }
 
 variable "acr_rg_location" {
     type = string
-    description = "(optional) describe your variable"
+    description = "Resource group location for the Container Registry"
 }
 
 variable "tags" {

@@ -4,6 +4,7 @@ variable "kv_rg_name" {
 
 variable "deploy_group_name" {
   default = ""
+  description = "The Secure dev group in Azure to apply key vault permissions to"
 }
 
 variable "kv_name" {

@@ -11,8 +11,8 @@ locals {
 }
 
 data "azurerm_container_registry" "acr" {
-  name                = var.acr_name
-  resource_group_name = var.acr_rg_name
+  name                = "acrCampus"
+  resource_group_name = "rg-campus-webops"
 }
 
 module "monitoring" {
