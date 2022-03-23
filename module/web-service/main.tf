@@ -41,7 +41,8 @@ resource "azurerm_app_service" "app_service" {
     DOCKER_REGISTRY_SERVER_URL = "https://${data.azurerm_container_registry.container_reg.login_server}"
     DOCKER_REGISTRY_SERVER_USERNAME = data.azurerm_container_registry.container_reg.admin_username
     DOCKER_REGISTRY_SERVER_PASSWORD = data.azurerm_container_registry.container_reg.admin_password
-    APPLICATIONINSIGHTS_ROLE_NAME = var.web_app_name
+    APPLICATIONINSIGHTS_ROLE_NAME = var.web_app_name,
+    WEBSITES_PORT = var.port
   }, var.application_settings)
 
   site_config {

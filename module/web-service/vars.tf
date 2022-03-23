@@ -35,6 +35,11 @@ variable "start_command" {
     default = ""
 }
 
+variable "port" {
+    type = number
+    description = "Port that the Docker container is running on"
+}
+
 variable "docker_image" {
     type = string
 }

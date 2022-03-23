@@ -59,11 +59,12 @@ module "campus_service" {
   webapp_sku_name         = var.sku_size
   web_app_capacity        = var.sku_capacity
   docker_image            = "${local.app_name}/${var.docker_tag_env}"
+  port                    = 3000
   application_settings    = merge(var.app_settings, local.secret_values)
   container_reg_rg        = var.acr_rg
   container_reg_name      = var.acr_name
   docker_tag              = var.campus_service_docker_tag
-  start_command           = "npm run start:prod"
+  start_command           = "node dist/main"
   app_domain_prefix       = local.app_name
   domain                  = var.app_dns_zone_name
   dns_zone_resource_group = var.app_dns_zone_rg_name
