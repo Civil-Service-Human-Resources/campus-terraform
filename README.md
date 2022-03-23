@@ -22,4 +22,18 @@ Setup.sh will then create the necessary `backend.conf` files, as well as set the
 
 ### Using Terraform
 
-Once the necessary `backend.conf` files have been created, terraform commands can be run in their respective directories by appending `-backend-config=backend.conf` flag to TF commands.
+#### Backend config
+
+Once the necessary `backend.conf` files have been created, `terraform init -backend-config=backend.conf` can be run in the required repository. All following Terraform commands will then use the correct remote state.
+
+#### Azure credentials
+
+The following Azure credentials must be set (as tf variables) for Terraform to manage resources (Aka. the deploy user):
+- sub_id
+- client_id
+- client_secret
+- tenant_id
+
+If these values are left blank, Terraform will get them from the currently logged in user's CLI session.
+
+**IMPORTANT**: If using the CLI, remember to use the correct Subscription. 
