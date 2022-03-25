@@ -1,7 +1,7 @@
 parameters:
   - name: env
 
--steps:
+steps:
 
   - task: CmdLine@2
     displayName: Terraform Init - ${{parameters.env}}
