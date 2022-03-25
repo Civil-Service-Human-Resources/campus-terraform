@@ -1,0 +1,28 @@
+parameters:
+  - name: env
+
+- task: CmdLine@2
+  displayName: Terraform Init - ${{parameters.env}}
+  inputs:
+    script: terraform init -backend-config="storage_account_name=$(tf-state-sa-name) resource_group_name=$(tf-state-rg-name) container_name=$(tf-state-container-name) key=${{parameters.env}}.$(tf-state-key-suffix)"
+    workingDirectory: environments/${{parameters.env}}
+
+- task: CmdLine@2
+  displayName: Terraform Validate - ${{parameters.env}}
+  inputs:
+    script: terraform validate
+    workingDirectory: environments/${{parameters.env}}
+
+- task: CmdLine@2
+  displayName: Terraform Plan - ${{parameters.env}}
+  inputs:
+    script: terraform plan -input=false -out=${{parameters.env}}-tfplan
+    workingDirectory: environments/${{parameters.env}}
+
+- task: ArchiveFiles@2
+  displayName: Archive Terraform Plan Files - ${{parameters.env}}
+  inputs:
+    rootFolderOrFile: environments/${{parameters.env}}
+    archiveType: tar
+    sevenZipCompression: fastest
+    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-${{parameters.env}}-tfplan.tgz
