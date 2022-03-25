@@ -22,14 +22,6 @@ steps:
     inputs:
       terraformVersion: '0.13.5'
 
-  - task: AzureCLI@2
-    displayName: 'Log into Azure CLI'
-    inputs:
-      azureSubscription: 'AzDevOps CSL Staging'
-      scriptType: 'pscore'
-      scriptLocation: 'inlineScript'
-      inlineScript: 'az login'
-
   - ${{ each env in parameters.envs }}:
       - template: terraform-cmds.yaml
         parameters:
