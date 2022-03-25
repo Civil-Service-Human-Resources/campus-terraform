@@ -6,7 +6,7 @@ steps:
   - task: CmdLine@2
     displayName: Terraform Init - ${{parameters.env}}
     inputs:
-      script: terraform init -backend-config="storage_account_name=$(tf-state-sa-name) resource_group_name=$(tf-state-rg-name) container_name=$(tf-state-container-name) key=${{parameters.env}}.$(tf-state-key-suffix)"
+      script: terraform init -backend-config="storage_account_name=$(tf-state-sa-name)" -backend-config="resource_group_name=$(tf-state-rg-name)" -backend-config="container_name=$(tf-state-container-name)" -backend-config="key=${{parameters.env}}.$(tf-state-key-suffix)"
       workingDirectory: environments/${{parameters.env}}
 
   - task: CmdLine@2
