@@ -22,7 +22,6 @@ steps:
     inputs:
       terraformVersion: '0.13.5'
 
-jobs:
   - ${{ each env in parameters.envs }}:
       - template: azure/terraform-cmds.yml
         parameters:
