@@ -15,13 +15,16 @@ steps:
       script: terraform validate
       workingDirectory: environments/${{parameters.env}}
 
-  - task: TerraformTaskV2@2
+  - task: CmdLine@2
+    displayName: Terraform Plan - ${{parameters.env}}
+    env:
+      ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+      ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+      ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+      ARM_TENANT_ID: $(ARM_TENANT_ID)
     inputs:
-      provider: 'azurerm'
-      command: 'plan'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/environments/${{parameters.env}}'
-      commandOptions: '-input=false -out=${{parameters.env}}-tfplan'
-      environmentServiceNameAzureRM: 'AzDevOps CSL Staging'
+      script: terraform plan -input=false -out=${{parameters.env}}-tfplan
+      workingDirectory: environments/${{parameters.env}}
 
   - task: ArchiveFiles@2
     displayName: Archive Terraform Plan Files - ${{parameters.env}}
