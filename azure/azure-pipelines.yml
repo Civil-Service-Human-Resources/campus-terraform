@@ -6,7 +6,7 @@
 trigger:
 - develop
 
-paramaters:
+parameters:
   - name: envs
     type: object
     default:
