@@ -23,6 +23,6 @@ steps:
       terraformVersion: '0.13.5'
 
   - ${{ each env in parameters.envs }}:
-      - template: azure/terraform-cmds.yml
+      - template: terraform-cmds.yml
         parameters:
           env: ${{ env }}
