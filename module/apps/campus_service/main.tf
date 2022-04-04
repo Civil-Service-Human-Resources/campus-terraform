@@ -4,21 +4,14 @@ locals {
   app_name     = "campus-service"
   app_name_env = "${local.app_name}-${var.env}"
   app_secrets = [
-    "FILE_STORE_ACCESS_KEY",
-    "FILE_STORE_ACCOUNT_NAME",
-    "FILE_STORE_CONTAINER_NAME",
-    "CONTENT_CACHE_HOST",
-    "CONTENT_CACHE_PORT",
-    "CONTENT_CACHE_PASSWORD",
-    "REDIS_ACCESS_TOKEN_HOST",
-    "REDIS_ACCESS_TOKEN_PORT",
-    "REDIS_ACCESS_TOKEN_PASSWORD",
-    "CSL_LEARNING_CATALOGUE_CLIENT_ID",
-    "CSL_LEARNING_CATALOGUE_CLIENT_SECRET",
-    "CSL_LEARNING_CATALOGUE_IDENTITY_URL",
-    "CSL_LEARNING_CATALOGUE_ACCESS_TOKEN_ID",
-    "CSL_LEARNING_CATALOGUE_BASE_URL",
-    "CSL_FRONTEND_URL",
+    "redis-access-token-host",
+    "redis-access-token-port",
+    "redis-access-token-password",
+    "csl-learning-catalogue-client-id",
+    "csl-learning-catalogue-client-secret",
+    "csl-learning-catalogue-identity-url",
+    "csl-learning-catalogue-access-token-id",
+    "csl-learning-catalogue-base-url",
   ]
 }
 
@@ -43,23 +36,59 @@ resource "azurerm_key_vault_access_policy" "app_kv_ap" {
   ]
 }
 
-resource "azurerm_key_vault_secret" "app_secrets" {
+## Secrets
+
+data "azurerm_key_vault_secret" "redis_access_token_host" {
   key_vault_id = data.azurerm_key_vault.secrets_kv.id
-  for_each     = toset(local.app_secrets)
-  name         = lower(replace(each.key, "_", "-"))
-  value        = ""
-  lifecycle {
-    ignore_changes = [value]
-  }
-  tags         = var.tags
+  name         = "redis-access-token-host"
 }
 
-#locals {
-#  secret_values = { for v in toset(local.app_secrets) : v => "@Microsoft.KeyVault(VaultName=${var.secrets_kv_name};SecretName=${lower(replace(v, "_", "-"))})" }
-#}
+data "azurerm_key_vault_secret" "redis_access_token_port" {
+  key_vault_id = data.azurerm_key_vault.secrets_kv.id
+  name         = "redis-access-token-port"
+}
+
+data "azurerm_key_vault_secret" "redis_access_token_password" {
+  key_vault_id = data.azurerm_key_vault.secrets_kv.id
+  name         = "redis-access-token-password"
+}
+
+data "azurerm_key_vault_secret" "csl_learning_catalogue_client_id" {
+  key_vault_id = data.azurerm_key_vault.secrets_kv.id
+  name         = "csl-learning-catalogue-client-id"
+}
+
+data "azurerm_key_vault_secret" "csl_learning_catalogue_client_secret" {
+  key_vault_id = data.azurerm_key_vault.secrets_kv.id
+  name         = "csl-learning-catalogue-client-secret"
+}
+
+data "azurerm_key_vault_secret" "csl_learning_catalogue_identity_url" {
+  key_vault_id = data.azurerm_key_vault.secrets_kv.id
+  name         = "csl-learning-catalogue-identity-url"
+}
+
+data "azurerm_key_vault_secret" "csl_learning_catalogue_access_token_id" {
+  key_vault_id = data.azurerm_key_vault.secrets_kv.id
+  name         = "csl-learning-catalogue-access-token-id"
+}
+
+data "azurerm_key_vault_secret" "csl_learning_catalogue_base_url" {
+  key_vault_id = data.azurerm_key_vault.secrets_kv.id
+  name         = "csl-learning-catalogue-base-url"
+}
 
 locals {
-  secret_values = { for v in toset(local.app_secrets) : v => "@Microsoft.KeyVault(SecretUri=https://${var.secrets_kv_name}.vault.azure.net/secrets/${lower(replace(v, "_", "-"))}/)" }
+  secret_values = {
+    REDIS_ACCESS_TOKEN_HOST = "@Microsoft.KeyVault(SecretUri=${var.secrets_kv_name};SecretName=redis-access-token-host;version=)"
+    REDIS_ACCESS_TOKEN_PORT
+    REDIS_ACCESS_TOKEN_PASSWORD
+    CSL_LEARNING_CATALOGUE_CLIENT_ID
+    CSL_LEARNING_CATALOGUE_CLIENT_SECRET
+    CSL_LEARNING_CATALOGUE_IDENTITY_URL
+    CSL_LEARNING_CATALOGUE_ACCESS_TOKEN_ID
+    CSL_LEARNING_CATALOGUE_BASE_URL
+  }
 }
 
 module "campus_service" {

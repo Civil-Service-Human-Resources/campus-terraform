@@ -31,3 +31,16 @@ resource "azurerm_key_vault_access_policy" "app_kv_ap" {
     "List", "Set", "Delete", "Recover", "Restore", "Purge"
   ]
 }
+
+## secrets
+
+resource "azurerm_key_vault_secret" "app_secrets" {
+  key_vault_id = azurerm_key_vault.kv.id
+  for_each     = toset(var.secrets)
+  name         = each.key
+  value        = ""
+  lifecycle {
+    ignore_changes = [value]
+  }
+  tags         = var.tags
+}

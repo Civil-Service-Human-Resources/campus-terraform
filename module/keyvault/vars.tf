@@ -11,6 +11,10 @@ variable "kv_name" {
   default = ""
 }
 
+variable "secrets" {
+  type = list
+}
+
 variable "tags" {
   type = map
 }
