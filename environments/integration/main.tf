@@ -46,13 +46,11 @@ module "campus_service" {
   sku_tier = "Standard"
   sku_size = "S1"
   sku_capacity = 1
-  docker_tag_env = "test"
   secrets_kv_name = local.kv_name
   secrets_kv_rg_name = local.kv_rg_name
   app_settings = {"APPLICATIONINSIGHTS_CONNECTION_STRING": module.monitoring.appi_conn_string}
   acr_rg = data.azurerm_container_registry.acr.resource_group_name
   acr_name = data.azurerm_container_registry.acr.name
-  campus_service_docker_tag = "develop"
   app_dns_zone_name = local.app_dns_zone_name
   app_dns_zone_rg_name = local.app_dns_zone_rg_name
   content_cache_capacity = 1

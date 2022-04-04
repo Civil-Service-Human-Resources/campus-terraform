@@ -17,6 +17,9 @@ resource "azurerm_storage_account" "storage_acc" {
   account_tier             = "Standard"
   location                 = azurerm_resource_group.app_resource_group.location
   resource_group_name      = azurerm_resource_group.app_resource_group.name
+  static_website {
+    index_document = "index.html"
+  }
 
   tags = var.tags
 

@@ -10,13 +10,15 @@ locals {
     "CONTENT_CACHE_HOST",
     "CONTENT_CACHE_PORT",
     "CONTENT_CACHE_PASSWORD",
+    "REDIS_ACCESS_TOKEN_HOST",
+    "REDIS_ACCESS_TOKEN_PORT",
+    "REDIS_ACCESS_TOKEN_PASSWORD",
     "CSL_LEARNING_CATALOGUE_CLIENT_ID",
     "CSL_LEARNING_CATALOGUE_CLIENT_SECRET",
     "CSL_LEARNING_CATALOGUE_IDENTITY_URL",
     "CSL_LEARNING_CATALOGUE_ACCESS_TOKEN_ID",
     "CSL_LEARNING_CATALOGUE_BASE_URL",
     "CSL_FRONTEND_URL",
-    "NODE_ENV"
   ]
 }
 
@@ -46,11 +48,18 @@ resource "azurerm_key_vault_secret" "app_secrets" {
   for_each     = toset(local.app_secrets)
   name         = lower(replace(each.key, "_", "-"))
   value        = ""
+  lifecycle {
+    ignore_changes = [value]
+  }
   tags         = var.tags
 }
 
+#locals {
+#  secret_values = { for v in toset(local.app_secrets) : v => "@Microsoft.KeyVault(VaultName=${var.secrets_kv_name};SecretName=${lower(replace(v, "_", "-"))})" }
+#}
+
 locals {
-  secret_values = { for v in toset(local.app_secrets) : v => "@Microsoft.KeyVault(VaultName=${var.secrets_kv_name};SecretName=${lower(replace(v, "_", "-"))})" }
+  secret_values = { for v in toset(local.app_secrets) : v => "@Microsoft.KeyVault(SecretUri=https://${var.secrets_kv_name}.vault.azure.net/secrets/${lower(replace(v, "_", "-"))}/)" }
 }
 
 module "campus_service" {
@@ -60,12 +69,10 @@ module "campus_service" {
   webapp_sku_tier         = var.sku_tier
   webapp_sku_name         = var.sku_size
   web_app_capacity        = var.sku_capacity
-  docker_image            = "${local.app_name}/${var.docker_tag_env}"
   port                    = 3000
   application_settings    = merge(var.app_settings, local.secret_values)
   container_reg_rg        = var.acr_rg
   container_reg_name      = var.acr_name
-  docker_tag              = var.campus_service_docker_tag
   start_command           = "node dist/main"
   app_domain_prefix       = local.app_name
   domain                  = var.app_dns_zone_name
