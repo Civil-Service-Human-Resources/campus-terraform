@@ -32,18 +32,16 @@ resource "azurerm_app_service" "app_service" {
   client_affinity_enabled = false
   client_cert_enabled     = true
   client_cert_mode = "Required"
-
   https_only              = true
-
 
   identity {
     type = "SystemAssigned"
   }
 
   app_settings = merge({
-    DOCKER_REGISTRY_SERVER_URL = "https://${data.azurerm_container_registry.container_reg.login_server}"
-    DOCKER_REGISTRY_SERVER_USERNAME = data.azurerm_container_registry.container_reg.admin_username
-    DOCKER_REGISTRY_SERVER_PASSWORD = data.azurerm_container_registry.container_reg.admin_password
+    DOCKER_REGISTRY_SERVER_URL = ""
+    DOCKER_REGISTRY_SERVER_USERNAME = ""
+    DOCKER_REGISTRY_SERVER_PASSWORD = ""
     APPLICATIONINSIGHTS_ROLE_NAME = var.web_app_name,
     WEBSITES_PORT = var.port,
     NODE_ENV = "production"
@@ -57,6 +55,7 @@ resource "azurerm_app_service" "app_service" {
     min_tls_version   = "1.2"
     http2_enabled     = false
     acr_use_managed_identity_credentials = true
+    health_check_path = "/health"
   }
 
   tags = var.tags

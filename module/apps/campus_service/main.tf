@@ -3,15 +3,17 @@ locals {
   app_rg_location = "UK West"
   app_name     = "campus-service"
   app_name_env = "${local.app_name}-${var.env}"
-  app_secrets = [
-    "redis-access-token-host",
-    "redis-access-token-port",
-    "redis-access-token-password",
-    "csl-learning-catalogue-client-id",
-    "csl-learning-catalogue-client-secret",
-    "csl-learning-catalogue-identity-url",
-    "csl-learning-catalogue-access-token-id",
-    "csl-learning-catalogue-base-url",
+  secret_names = [
+    "REDIS_ACCESS_TOKEN_URL",
+    "CSL_LEARNING_CATALOGUE_CLIENT_ID",
+    "CSL_LEARNING_CATALOGUE_CLIENT_SECRET",
+    "CSL_LEARNING_CATALOGUE_IDENTITY_URL",
+    "CSL_LEARNING_CATALOGUE_ACCESS_TOKEN_ID",
+    "CSL_LEARNING_CATALOGUE_BASE_URL",
+    "CSL_CONTENT_CACHE_URL",
+    "CSL_CONTENT_CSV_FILENAME",
+    "BLOB_CONNECTION_STRING",
+    "BLOB_CONTAINER_NAME"
   ]
 }
 
@@ -36,60 +38,10 @@ resource "azurerm_key_vault_access_policy" "app_kv_ap" {
   ]
 }
 
-## Secrets
-
-data "azurerm_key_vault_secret" "redis_access_token_host" {
-  key_vault_id = data.azurerm_key_vault.secrets_kv.id
-  name         = "redis-access-token-host"
-}
-
-data "azurerm_key_vault_secret" "redis_access_token_port" {
-  key_vault_id = data.azurerm_key_vault.secrets_kv.id
-  name         = "redis-access-token-port"
-}
-
-data "azurerm_key_vault_secret" "redis_access_token_password" {
-  key_vault_id = data.azurerm_key_vault.secrets_kv.id
-  name         = "redis-access-token-password"
-}
-
-data "azurerm_key_vault_secret" "csl_learning_catalogue_client_id" {
-  key_vault_id = data.azurerm_key_vault.secrets_kv.id
-  name         = "csl-learning-catalogue-client-id"
-}
-
-data "azurerm_key_vault_secret" "csl_learning_catalogue_client_secret" {
-  key_vault_id = data.azurerm_key_vault.secrets_kv.id
-  name         = "csl-learning-catalogue-client-secret"
-}
-
-data "azurerm_key_vault_secret" "csl_learning_catalogue_identity_url" {
-  key_vault_id = data.azurerm_key_vault.secrets_kv.id
-  name         = "csl-learning-catalogue-identity-url"
-}
-
-data "azurerm_key_vault_secret" "csl_learning_catalogue_access_token_id" {
-  key_vault_id = data.azurerm_key_vault.secrets_kv.id
-  name         = "csl-learning-catalogue-access-token-id"
-}
-
-data "azurerm_key_vault_secret" "csl_learning_catalogue_base_url" {
-  key_vault_id = data.azurerm_key_vault.secrets_kv.id
-  name         = "csl-learning-catalogue-base-url"
-}
-
 locals {
-  secret_values = {
-    REDIS_ACCESS_TOKEN_HOST = "@Microsoft.KeyVault(SecretUri=${var.secrets_kv_name};SecretName=redis-access-token-host;version=)"
-    REDIS_ACCESS_TOKEN_PORT
-    REDIS_ACCESS_TOKEN_PASSWORD
-    CSL_LEARNING_CATALOGUE_CLIENT_ID
-    CSL_LEARNING_CATALOGUE_CLIENT_SECRET
-    CSL_LEARNING_CATALOGUE_IDENTITY_URL
-    CSL_LEARNING_CATALOGUE_ACCESS_TOKEN_ID
-    CSL_LEARNING_CATALOGUE_BASE_URL
-  }
+  secret_values = {for n in local.secret_names : n => ""}
 }
+
 
 module "campus_service" {
   source                  = "../../web-service"
@@ -132,14 +84,14 @@ resource "azurerm_storage_container" "storage_container" {
 
 ## Redis content cache
 
-#resource "azurerm_redis_cache" "cache" {
-#  name                = "redis-content-${local.app_name_env}"
-#  location                 = azurerm_resource_group.app_resource_group.location
-#  resource_group_name      = azurerm_resource_group.app_resource_group.name
-#  capacity   = var.content_cache_capacity
-#  family     = var.content_cache_family
-#  sku_name        = var.content_cache_sku
-#  enable_non_ssl_port = false
-#  minimum_tls_version = "1.2"
-#  tags = var.tags
-#}
+resource "azurerm_redis_cache" "cache" {
+  name                = "redis-content-${local.app_name_env}"
+  location                 = azurerm_resource_group.app_resource_group.location
+  resource_group_name      = azurerm_resource_group.app_resource_group.name
+  capacity   = var.content_cache_capacity
+  family     = var.content_cache_family
+  sku_name        = var.content_cache_sku
+  enable_non_ssl_port = false
+  minimum_tls_version = "1.2"
+  tags = var.tags
+}

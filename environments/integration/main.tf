@@ -43,9 +43,7 @@ module "app_secrets_vault" {
   deploy_group_name = var.deploy_group_name
   kv_name = local.kv_name
   kv_rg_name = local.kv_rg_name
-  secrets = [
-    local.secrets
-  ]
+  secrets = local.secrets
   tags = local.tags
 }
 
