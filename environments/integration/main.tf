@@ -6,6 +6,23 @@ locals {
     platform = "campus"
     env = local.env
   }
+  secrets = [
+    "file-store-access-key",
+    "file-store-account-name",
+    "file-store-container-name",
+    "content-cache-host",
+    "content-cache-port",
+    "content-cache-password",
+    "redis-access-token-host",
+    "redis-access-token-port",
+    "redis-access-token-password",
+    "csl-learning-catalogue-client-id",
+    "csl-learning-catalogue-client-secret",
+    "csl-learning-catalogue-identity-url",
+    "csl-learning-catalogue-access-token-id",
+    "csl-learning-catalogue-base-url",
+    "csl-frontend-url",
+  ]
   app_dns_zone_name = "integration.learn.civilservice.gov.uk"
   app_dns_zone_rg_name = "lpgdomain"
 }
@@ -26,6 +43,7 @@ module "app_secrets_vault" {
   deploy_group_name = var.deploy_group_name
   kv_name = local.kv_name
   kv_rg_name = local.kv_rg_name
+  secrets = local.secrets
   tags = local.tags
 }
 
@@ -46,13 +64,11 @@ module "campus_service" {
   sku_tier = "Standard"
   sku_size = "S1"
   sku_capacity = 1
-  docker_tag_env = "test"
   secrets_kv_name = local.kv_name
   secrets_kv_rg_name = local.kv_rg_name
   app_settings = {"APPLICATIONINSIGHTS_CONNECTION_STRING": module.monitoring.appi_conn_string}
   acr_rg = data.azurerm_container_registry.acr.resource_group_name
   acr_name = data.azurerm_container_registry.acr.name
-  campus_service_docker_tag = "develop"
   app_dns_zone_name = local.app_dns_zone_name
   app_dns_zone_rg_name = local.app_dns_zone_rg_name
   content_cache_capacity = 1

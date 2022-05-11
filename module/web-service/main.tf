@@ -30,7 +30,8 @@ resource "azurerm_app_service" "app_service" {
   location                = var.app_service_rg_location
   app_service_plan_id     = azurerm_app_service_plan.web_app_service_plan.id
   client_affinity_enabled = false
-  client_cert_enabled     = false
+#  client_cert_enabled     = true
+#  client_cert_mode = "Required"
   https_only              = true
 
   identity {
@@ -38,10 +39,9 @@ resource "azurerm_app_service" "app_service" {
   }
 
   app_settings = merge({
-    DOCKER_REGISTRY_SERVER_URL = "https://${data.azurerm_container_registry.container_reg.login_server}"
-    DOCKER_REGISTRY_SERVER_USERNAME = data.azurerm_container_registry.container_reg.admin_username
-    DOCKER_REGISTRY_SERVER_PASSWORD = data.azurerm_container_registry.container_reg.admin_password
-    APPLICATIONINSIGHTS_ROLE_NAME = var.web_app_name
+    APPLICATIONINSIGHTS_ROLE_NAME = var.web_app_name,
+    WEBSITES_PORT = var.port,
+    NODE_ENV = "production"
   }, var.application_settings)
 
   site_config {
@@ -49,10 +49,10 @@ resource "azurerm_app_service" "app_service" {
     app_command_line  = var.start_command
     ftps_state        = "Disabled"
     ip_restriction    = []
-    linux_fx_version  = "DOCKER|${var.docker_image}:${var.docker_tag}"
     min_tls_version   = "1.2"
     http2_enabled     = false
-
+    acr_use_managed_identity_credentials = true
+    health_check_path = "/health"
   }
 
   tags = var.tags

@@ -51,7 +51,7 @@ locals {
 
 
 module "campus_service" {
-  source                  = "../../web-service"
+  source                  = "../../web-service-no-dns"
   rg_name                 = azurerm_resource_group.app_resource_group.name
   web_app_name            = local.app_name_env
   webapp_sku_tier         = var.sku_tier
@@ -62,9 +62,6 @@ module "campus_service" {
   container_reg_rg        = var.acr_rg
   container_reg_name      = var.acr_name
   start_command           = "node dist/main"
-  app_domain_prefix       = local.app_name
-  domain                  = var.app_dns_zone_name
-  dns_zone_resource_group = var.app_dns_zone_rg_name
   tags                    = var.tags
   app_service_rg_location = local.app_rg_location
   app_service_rg_name = local.app_rg_name

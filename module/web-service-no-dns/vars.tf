@@ -40,19 +40,6 @@ variable "port" {
     description = "Port that the Docker container is running on"
 }
 
-variable "app_domain_prefix" {
-    type = string
-    description = "The base url prefix for the web application"
-}
-
-variable "domain" {
-    type = string
-}
-
-variable "dns_zone_resource_group" {
-    type = string
-}
-
 variable "app_service_rg_name" {
     type = string
 }

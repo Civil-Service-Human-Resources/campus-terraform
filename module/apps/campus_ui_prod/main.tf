@@ -91,32 +91,3 @@ resource "azurerm_cdn_endpoint" "cdn_endpoint" {
     }
   }
 }
-
-## URL and DNS
-
-resource "azurerm_dns_cname_record" "cdn_cname_record" {
-  name                = "campus"
-  zone_name           = var.domain
-  resource_group_name = var.dns_zone_resource_group
-  ttl                 = 3600
-  target_resource_id  = azurerm_cdn_endpoint.cdn_endpoint.id
-
-  depends_on = [
-    azurerm_cdn_endpoint.cdn_endpoint
-  ]
-}
-
-resource "azurerm_cdn_endpoint_custom_domain" "custom_domain" {
-  name            = "cdn-domain"
-  cdn_endpoint_id = azurerm_cdn_endpoint.cdn_endpoint.id
-  host_name       = "campus.${var.domain}"
-
-  depends_on = [
-    azurerm_dns_cname_record.cdn_cname_record
-  ]
-
-  cdn_managed_https {
-    certificate_type = "Dedicated"
-    protocol_type    = "ServerNameIndication"
-  }
-}
