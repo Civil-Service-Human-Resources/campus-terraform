@@ -30,8 +30,8 @@ resource "azurerm_app_service" "app_service" {
   location                = var.app_service_rg_location
   app_service_plan_id     = azurerm_app_service_plan.web_app_service_plan.id
   client_affinity_enabled = false
-  client_cert_enabled     = true
-  client_cert_mode = "Required"
+#  client_cert_enabled     = true
+#  client_cert_mode = "Required"
   https_only              = true
 
   identity {
@@ -39,9 +39,6 @@ resource "azurerm_app_service" "app_service" {
   }
 
   app_settings = merge({
-    DOCKER_REGISTRY_SERVER_URL = ""
-    DOCKER_REGISTRY_SERVER_USERNAME = ""
-    DOCKER_REGISTRY_SERVER_PASSWORD = ""
     APPLICATIONINSIGHTS_ROLE_NAME = var.web_app_name,
     WEBSITES_PORT = var.port,
     NODE_ENV = "production"
